@@ -61,13 +61,13 @@ git clone https://github.com/dalgibbard/moonlighter.git
 ## Hardware Setup Notes
 ### Luminosity Sensor
 * The Adafruit board should be connected as follows:
+
 ```
-PI     |  Adafruit
--------------------
-PIN1  ->  VCC
-PIN3  ->  SDA
-PIN5  ->  SCL
-PIN6  ->  GND
+PI      Adafruit
+PIN1 -> VCC
+PIN3 -> SDA
+PIN5 -> SCL
+PIN6 -> GND
 ```
 
 ### Power
