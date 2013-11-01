@@ -75,8 +75,8 @@ PIN6  ->  GND
 ### Darlington + LEDs
 Although the Darlington allows for control of eight seperate channels, I only really needed for one SET of LEDs, so they're all wired up in Parallel on the first channel (GPIO to Darlington_Pin1, LED Grounds to Darlington_Pin18). So you end up with:
 ```
-            _______
-RPI_P12 -> 1|  o  |18 --> ALL_LED_GND                            __
+            ______
+RPI_P12 -> 1|  ^  |18 --> ALL_LED_GND                            __
             |  L  |           \----> LED_1 -- 470ohn Resistor -->||
             |  N  |            \----> LED_N -- 470ohm Resistor ->||
             |  2  |                  etc.                        ||
