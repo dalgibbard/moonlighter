@@ -69,6 +69,7 @@ PIN3  ->  SDA
 PIN5  ->  SCL
 PIN6  ->  GND
 ```
+
 ### Power
 
 ### Darlington + LEDs
