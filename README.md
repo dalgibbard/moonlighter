@@ -53,7 +53,7 @@ sudo rpi-update
 sudo reboot
 ```
 ### Enable pi-blaster
-<info here>
+~info here~
 
 ## Check out the Git code
 git clone https://github.com/dalgibbard/moonlighter.git
@@ -61,13 +61,31 @@ git clone https://github.com/dalgibbard/moonlighter.git
 ## Hardware Setup Notes
 ### Luminosity Sensor
 * The Adafruit board should be connected as follows:
+```
 PI   || Adafruit
 PIN1 -> VCC
 PIN3 -> SDA
 PIN5 -> SCL
 PIN6 -> GND
+```
+### Power
 
-### 
+### Darlington + LEDs
+Although the Darlington allows for control of eight seperate channels, I only really needed for one SET of LEDs, so they're all wired up in Parallel on the first channel (GPIO to Darlington_Pin1, LED Grounds to Darlington_Pin18). So you end up with:
+```
+            _____
+RPI_P12 -> 1| o |18 --> ALL_LED_GND                            __
+            | L |           \----> LED_1 -- 470ohn Resistor -->||
+            | N |            \----> LED_N -- 470ohm Resistor ->||
+            | 2 |                  etc.                        ||
+            | 8 |                                              ||
+            | 0 |                                              ||
+            | 3 |                                              ||
+            | A |                                              \/  ___
+RPI_GND -> 9|___|10 ----------------------------------------> 12v+ |X| 12v_GND
+         \                                                             -/|
+          \------------------------------------------------------------/
+```
 
 ## Run the Code
 ### Check current Lux Levels
