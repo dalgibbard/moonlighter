@@ -467,46 +467,9 @@ class Adafruit_TSL2651(Adafruit_I2C):
         return lux
 
 '''
-#**************************************************************************/
-#   Gets the most recent sensor event
-#**************************************************************************/
-void Adafruit_TSL2561::getEvent(sensors_event_t *event)
-{
-  uint16_t broadband, ir;
- 
-  # Clear the event */
-  memset(event, 0, sizeof(sensors_event_t));
- 
-  event->version   = sizeof(sensors_event_t);
-  event->sensor_id = _tsl2561SensorID;
-  event->type      = SENSOR_TYPE_LIGHT;
-  event->timestamp = 0;
-
-  # Calculate the actual lux value */
-  getLuminosity(&broadband, &ir);
-  event->light = calculateLux(broadband, ir);
-}
-
-#**************************************************************************/
-#   Gets the sensor_t data
-#**************************************************************************/
-void Adafruit_TSL2561::getSensor(sensor_t *sensor)
-{
-  # Clear the sensor_t object */
-  memset(sensor, 0, sizeof(sensor_t));
-
-  # Insert the sensor name in the fixed length char array */
-  strncpy (sensor->name, "TSL2561", sizeof(sensor->name) - 1);
-  sensor->name[sizeof(sensor->name)- 1] = 0;
-  sensor->version     = 1;
-  sensor->sensor_id   = _tsl2561SensorID;
-  sensor->type        = SENSOR_TYPE_LIGHT;
-  sensor->min_delay   = 0;
-  sensor->max_value   = 17000.0;  /* Based on trial and error ... confirm! */
-  sensor->min_value   = 0.0;
-  sensor->resolution  = 1.0;
-}
+Important code starts here ;)
 '''
+
 LightSensor = Adafruit_TSL2651()
 LightSensor.enableAutoGain(True)
 # See if "loop" has been passed as an arg.
