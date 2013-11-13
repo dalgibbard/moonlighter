@@ -31,7 +31,7 @@ The hardware i've used for this project is:
 * 1x LN2803A Darlington Array IC
 * Moonlighter Board (link to follow) [Optional - this can be done on a breadboard or whatever too]
 * Lots of cable... AWG26 is fine.
-* Internet Access ;)
+* Internet Access (For the initial install anyway!)
 
 ## Configuring the Raspberry Pi
 ### Enabling I2C
@@ -52,11 +52,48 @@ sudo apt-get update && sudo apt-get upgrade -y
 sudo rpi-update
 sudo reboot
 ```
-### Enable pi-blaster
+
+### Install Dependancies
+The moonlighter code utilises python3. To use it, and to install the required dependancies, do the following:
+```
+sudo apt-get update
+sudo apt-get install python3 python3-dev python3-setuptools python3-pip
+```
+
+### Obtain PyEphem Library
+The PyEphem is a scientific computational library which offers various
+precise calculations for lunar cycles/patterns etc.
+
+To install it, do the following:
+```
+sudo pip-3.2 install pyephem
+```
+
+### Enable pi-blaster /// UNDER-REVIEW for ServoBlaster
 ~info here~
 
-## Check out the Git code
+### Check out the Git code
+```
 git clone https://github.com/dalgibbard/moonlighter.git
+cd moonlighter
+```
+
+### Install a patched version of py-smbus
+py-smbus is required in order to interface with the i2c bus
+(and therefore, the luminosity sensor). However, at the time
+of writing, it's not compatible with Python3.
+
+Therefore, follow these steps to fix!
+```
+wget http://ftp.de.debian.org/debian/pool/main/i/i2c-tools/i2c-tools_3.1.0.orig.tar.bz2
+tar xf i2c-tools_3.1.0.orig.tar.bz2
+rm -f i2c-tools_3.1.0.orig.tar.bz2
+cd i2c-tools-3.1.0/py-smbus
+# patch over smbusmodule.c
+mv ../../pysmbus-patch/smbusmodule.c .
+python3 setup.py build
+sudo python3 setup.py install
+```
 
 ## Hardware Setup Notes
 ### Luminosity Sensor
@@ -71,6 +108,11 @@ PIN6 -> GND
 ```
 
 ### Power
+Power for my kit is being powered by a cheapo, chinese made 12v to 5v inverter,
+spliced with a MicroUSB cable.
+This allows me to power the Pi from 5v and the 12v LEDs, all from a single
+12v Source. You could use 5v LEDs (with a sufficient PSU) or other similar
+transform options for supply.
 
 ### Darlington + LEDs
 Although the Darlington allows for control of eight seperate channels, I only really needed for one SET of LEDs, so they're all wired up in Parallel on the first channel (GPIO to Darlington_Pin1, LED Grounds to Darlington_Pin18). So you end up with:
@@ -90,7 +132,14 @@ RPI_GND -> 9|_____|10 ========================================> 12v+ |X| 12v_GND
             (GND Link possibly optional, It didn't work for me otherwise!)
 ```
 
-## Run the Code
+## NEW: Run the Code
+TBC
+Run the following for more info:
+```
+./moonlighter.py -h
+```
+
+## LEGACY: Run the Code
 ### Check current Lux Levels
 The script lux.py provides the current Lux reading from the Adafruit Luminosity Sensor board.
 
