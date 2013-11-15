@@ -72,15 +72,15 @@ sudo pip-3.2 install pyephem
 ### Enable pi-blaster /// UNDER-REVIEW for ServoBlaster
 ~info here~
 #### ServoBlaster Install
-Whilst still in the moonlighter folder (just for simplicities sake really), pull do the latest ServoBlaster code
-which is used to control the brightness of the Moonlight LEDs.
+Whilst still in the moonlighter folder (just for simplicities sake really), pull down and install the latest
+ServoBlaster code which is used to control the brightness of the Moonlight LEDs.
 
 ```
 git clone https://github.com/richardghirst/PiBits
 cd PiBits/ServoBlaster/user
 make
 sudo make install
-## Replace the original ServoBlaster init script with this one (somewhat optional):
+## Replace the original ServoBlaster init script with this one (defines just Pin12 as "Servo 0"):
 cd ../../..
 sudo cp servoblaster-init /etc/init.d/servoblaster
 ```
