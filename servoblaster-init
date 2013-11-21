@@ -14,7 +14,7 @@ PATH=/sbin:/usr/sbin:/bin:/usr/bin
 #. /lib/init/vars.sh
 
 #OPTS="--idle-timeout=20000"
-OPTS=""
+OPTS='--p1pins=12 --p5pins='
 
 res=0
 
