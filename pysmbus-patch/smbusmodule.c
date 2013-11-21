@@ -21,7 +21,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <fcntl.h>
-#include <linux/i2c-dev.h>
+#include "i2c-dev.h"
 
 /*
 ** These are required to build this module against Linux older than 2.6.23.

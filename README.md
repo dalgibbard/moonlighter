@@ -105,6 +105,7 @@ rm -f i2c-tools_3.1.0.orig.tar.bz2
 cd i2c-tools-3.1.0/py-smbus
 # patch over smbusmodule.c
 mv ../../pysmbus-patch/smbusmodule.c .
+mv ../../pysmbus-patch/i2c-dev.h .
 python3 setup.py build
 sudo python3 setup.py install
 ```
