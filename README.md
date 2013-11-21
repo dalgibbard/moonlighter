@@ -66,7 +66,7 @@ precise calculations for lunar cycles/patterns etc.
 
 To install it, do the following:
 ```
-sudo pip-3.2 install pyephem
+sudo pip-3.2 install ephem
 ```
 
 ### Enable pi-blaster /// UNDER-REVIEW for ServoBlaster
