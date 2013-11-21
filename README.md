@@ -69,6 +69,12 @@ To install it, do the following:
 sudo pip-3.2 install ephem
 ```
 
+### Check out the Git code
+```
+git clone https://github.com/dalgibbard/moonlighter.git
+cd moonlighter
+```
+
 ### Enable pi-blaster /// UNDER-REVIEW for ServoBlaster
 ~info here~
 #### ServoBlaster Install
@@ -85,11 +91,6 @@ cd ../../..
 sudo cp servoblaster-init /etc/init.d/servoblaster
 ```
 
-### Check out the Git code
-```
-git clone https://github.com/dalgibbard/moonlighter.git
-cd moonlighter
-```
 
 ### Install a patched version of py-smbus
 py-smbus is required in order to interface with the i2c bus
