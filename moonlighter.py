@@ -546,7 +546,7 @@ def get_state():
     ##### Will need to manage this in the temporary state file; if
     ##### file doesn't exist, assume zero.
     # NOTE
-    lightstatus = 0
+    lightstatus = 1
     return lightstatus
 
 def fileout(tmpfile, timestamp):
@@ -558,7 +558,10 @@ def set_power_level(power, verbose):
     if verbose == True:
         print("Setting Moonlight Power to: ", power, "%")
     # Max pulse width is "2000" = 20ms. work out percentage to pulsewidth conv.
-    pulsewidth = 20 * power
+    if power == 0:
+        pulsewidth = 0
+    else:
+        pulsewidth = 20 * power
     out = None
     err = None
     set_power_cmd = str("echo 0=") + str(pulsewidth) + str(" > /dev/servoblaster")
