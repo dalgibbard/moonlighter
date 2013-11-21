@@ -29,8 +29,8 @@ fi
 }
 stop(){
 echo -en "Stopping:\t\t"
-killall servod 2>&1 | grep -v "no process found"
-if [ $? = 0 ]; then
+killall servod 2>&1
+if [ `ps -ef | grep "servod" | grep -v grep | grep -c .` = 0 ]; then
 	echo '[  OK  ]'
 else
 	echo '[ FAIL ]'
@@ -50,7 +50,12 @@ case "$1" in
 	;;
   stop)	stop;;
   status)
-	[ -e /dev/servoblaster ] || res=4
+	if [ `ps -ef | grep servod | grep -v grep | grep -c .` = 0 ]; then
+		echo "Not Running"
+		res=1
+	else
+		echo "Running"
+	fi
 	;;
   *)
 	echo "Usage: servoblaster [start|stop|status]" >&2
