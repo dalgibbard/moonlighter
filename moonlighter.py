@@ -4,8 +4,7 @@
 #
 # If manual on; Set on to 
 # Check lux levels; if lower than "OFF" threshold:
-#   -> Validate lunar phase online
-#     --> FAIL: calculate internally.
+#   --> calculate internally.
 #   --> Set timer to go.
 #   --> Turn lights on to phase value
 #   --> Wait for ambient light levels to rise again
@@ -30,9 +29,14 @@ dusk = 20
 dawn = 50
 # Frequency to run loop checks (s)
 checkfreq = 30
+# Maximum Power output. Lunar Calcs are set proportionately.
+max_power = 50
 # Tempfile location
 tmpfile = '/var/tmp/ml_timestamp'
+# Default run_state
+run_state = "Stale"
 # LED (Servod) PWN ID
+ser_id = 0
 
 ## Detect early on that we're running with root permissions!
 if not os.geteuid() == 0:
@@ -500,7 +504,7 @@ class Adafruit_TSL2651(Adafruit_I2C):
 #####################
 
 def usage():
-    print("Usage: ", sys.argv[0], " [-v|--verbose] [-l|--lux] [-m|--moonphase] [-h|--help] [-s|--state] [-p=XX|--power=XX] [-o|--once] [-f|--force]")
+    print("Usage: ", sys.argv[0], " [-v|--verbose] [-l|--lux] [-m|--moonphase] [-h|--help] [-p=XX|--power=XX] [-o|--once] [-f|--force]")
 
 def get_moon_phase():
     # Set the observer point
@@ -541,22 +545,16 @@ def get_lux():
             break
     return luxlevel
 
-def get_state():
-    ### Code to read current power output level // on/off
-    ##### Will need to manage this in the temporary state file; if
-    ##### file doesn't exist, assume zero.
-    # NOTE
-    lightstatus = 1
-    return lightstatus
-
 def fileout(tmpfile, timestamp):
     # Function to write timestamp to file
     with open(tmpfile, "w") as myfile:
         myfile.write("ts = " + str(timestamp))
 
-def set_power_level(power, verbose):
+def set_power_level(power, verbose, max_power):
     if verbose == True:
         print("Setting Moonlight Power to: ", power, "%")
+    # Apply max_threshold value:
+    power = ( power / 100 ) * max_power
     # Max pulse width is "2000" = 20ms. work out percentage to pulsewidth conv.
     if power == 0:
         pulsewidth = 0
@@ -564,7 +562,7 @@ def set_power_level(power, verbose):
         pulsewidth = 20 * power
     out = None
     err = None
-    set_power_cmd = str("echo 0=") + str(pulsewidth) + str(" > /dev/servoblaster")
+    set_power_cmd = str("echo ")+ srv_id + str("=") + str(pulsewidth) + str(" > /dev/servoblaster")
     if os.path.exists("/dev/servoblaster"):
         do_set_power = subprocess.Popen([set_power_cmd], stdout=subprocess.PIPE, shell=True)
         (out, err) = do_set_power.communicate()
@@ -610,9 +608,8 @@ def check_timestamp(curtime, delay, verbose):
         return True
     
 
-def do_run(verbose, force):
+def do_run(verbose, force, run_state):
     luxlevel = get_lux()
-    cur_state = get_state()
     # Use a default delay of 30mins//1800s...
     timenow = time.time()
     # If Force is defined, then ignore whatever timediff returns :)
@@ -622,19 +619,23 @@ def do_run(verbose, force):
         timediff = check_timestamp(timenow, 1800, verbose)
     # If it's getting dark, and the moonlights aren't on yet,
     # and we haven't switched this in the past 30mins, turn lights on!
-    if luxlevel < dusk and cur_state == 0 and timediff == True:
+    if luxlevel < dusk and ( run_state == "Stale" or run_state == "Off" ) and timediff == True:
         pwrlvl = get_moon_phase()
-        set_power_level(pwrlvl, verbose)
+        set_power_level(pwrlvl, verbose, max_power)
         fileout(tmpfile, timenow)
-    elif luxlevel > dawn and cur_state != 0 and timediff == True:
+        run_state = "On"
+        return run_state
+    elif luxlevel > dawn and ( run_state == "Stale" or run_state == "On" ) and timediff == True:
         pwrlvl = 0
-        set_power_level(pwrlvl, verbose)
+        set_power_level(pwrlvl, verbose, max_power)
         fileout(tmpfile, timenow)
+        run_state = "Off"
+        return run_state
     else:
         if verbose == True:
             print("No lighting change required.")
 
-def main():
+def main(run_state, max_power):
     lux = get_lux()
     try:
         # v= versbose w/set, l=current_lux + quit, m=moon_phase + quit,
@@ -657,8 +658,9 @@ def main():
         elif o in ("-v", "--verbose"):
             verbose = True          
             print("Verbosity Enabled.")
-            print("Dusk Lux Level is: " + str(dusk))
-            print("Dawn Lux Level is: " + str(dawn))
+            print("Dusk Lux Level is: " + str(dusk) + str("lux"))
+            print("Dawn Lux Level is: " + str(dawn) + str("lux"))
+            print("Maximum LED Power: " + str(max_power) + str("%"))
             print("Delay between constant checks is: " + str(checkfreq) + "s")
             print("Tmpfile is: " + tmpfile)
             print("")
@@ -668,12 +670,9 @@ def main():
         elif o in ("-m", "--moonphase"):
             print("Moon_Phase_Brightness: ", get_moon_phase(), "%")
             run = False
-        elif o in ("-s", "--state"):
-            print("Current_State: ", get_state(), "%")
-            run = False
         elif o in ("-p", "--power"):
             pwrlvl = int(a)
-            set_power_level(pwrlvl, verbose)
+            set_power_level(pwrlvl, verbose, max_power)
             run = False
         elif o in ("-o", "--once"):
             runOnce = True
@@ -686,14 +685,14 @@ def main():
         if runOnce == True:
             if verbose == True:
                 print("Running once only...")
-            do_run(verbose, force)
+            run_state = do_run(verbose, force)
             sys.exit()
         else:
             if verbose == True:
                 print("Running normal loop")
             try:
                 while True:
-                    do_run(verbose, force)
+                    run_state = do_run(verbose, force, run_state)
                     if verbose == True:
                         print("Sleeping for " + str(checkfreq) + "s")
                     time.sleep(checkfreq)
@@ -702,4 +701,4 @@ def main():
                 sys.exit()
 
 if __name__ == "__main__":
-    main()
+    main(run_state, max_power)
