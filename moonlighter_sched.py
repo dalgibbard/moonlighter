@@ -148,6 +148,8 @@ def main(run_state, max_power, onhour, onmin, offhour, offmin, srv_id, checkfreq
             print("Verbosity Enabled.")
             print("Maximum LED Power: " + str(max_power) + str("%"))
             print("Delay between constant checks is: " + str(checkfreq) + "s")
+            print("Night Time Start: " + str(onhour) + str(':') + str(onmin))
+            print("Night Time End:   " + str(offhour) + str(':') + str(offmin))
             print("")
         elif o in ("-m", "--moonphase"):
             print("Moon_Phase_Brightness: ", get_moon_phase(), "%")
@@ -174,6 +176,7 @@ def main(run_state, max_power, onhour, onmin, offhour, offmin, srv_id, checkfreq
                 print("Running normal loop")
             try:
                 while True:
+                    print(datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S'))
                     run_state = do_run(verbose, force, run_state, onhour, onmin, offhour, offmin, srv_id)
                     if verbose == True:
                         print("Sleeping for " + str(checkfreq) + "s")
