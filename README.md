@@ -19,6 +19,7 @@ This page and associated code is a work in progress.
 * Create documentation on http://dgunix.com on board/box creation and wiring
 * Upload svg + stl design files
 * Validate documentation
+* Validate function arg passing in moonlighter_sched - pretty sure since removing OOP styles, variables behave normally!
 
 ## Required Hardware:
 The hardware i've used for this project is:
